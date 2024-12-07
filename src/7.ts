@@ -10,7 +10,13 @@ export default (lines: string[]) => {
 		}
 		const addRes = solve(nums, test, index + 1, acc + nums[index]);
 		const multRes = solve(nums, test, index + 1, acc * nums[index]);
-		return addRes.isCorrect ? addRes : multRes;
+		const concRes = solve(
+			nums,
+			test,
+			index + 1,
+			Number(`${acc}${nums[index]}`),
+		);
+		return addRes.isCorrect ? addRes : multRes.isCorrect ? multRes : concRes;
 	};
 
 	for (const line of lines) {
