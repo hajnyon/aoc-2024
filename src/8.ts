@@ -15,12 +15,18 @@ export default (lines: string[]) => {
 		}
 	}
 
+	const isOutOfBounds = ([row, col]: number[]) => {
+		return (
+			(row < 0 || row >= lines.length) && (col < 0 || col >= lines[0].length)
+		);
+	};
+
 	const getAntidotes = (pairs: [number, number][]) => {
+		console.log("🚀 ~ getAntidotes ~ pairs:", pairs);
 		const rowDist = Math.abs(pairs[0][0] - pairs[1][0]);
 		const colDist = Math.abs(pairs[0][1] - pairs[1][1]);
 
-		const antidote1 = [-1, -1];
-		const antidote2 = [-1, -1];
+		const antidotes: [number, number][] = [];
 
 		const isYBigger = pairs[0][0] > pairs[1][0];
 		const isXBigger = pairs[0][1] > pairs[1][1];
@@ -29,37 +35,76 @@ export default (lines: string[]) => {
 			if (isXBigger) {
 				// x x
 				// x A
-				antidote1[0] = pairs[0][0] + rowDist;
-				antidote1[1] = pairs[0][1] + colDist;
-				antidote2[0] = pairs[1][0] - rowDist;
-				antidote2[1] = pairs[1][1] - colDist;
+				let A = [...pairs[0]];
+				let B = [...pairs[1]];
+				while (true) {
+					const a: [number, number] = [A[0] + rowDist, A[1] + colDist];
+					const b: [number, number] = [B[0] - rowDist, B[1] - colDist];
+					antidotes.push(a);
+					antidotes.push(b);
+					A = [...a];
+					B = [...b];
+					if (isOutOfBounds(A) && isOutOfBounds(B)) {
+						break;
+					}
+				}
 			} else {
 				// x x
 				// A x
-				antidote1[0] = pairs[0][0] + rowDist;
-				antidote1[1] = pairs[0][1] - colDist;
-				antidote2[0] = pairs[1][0] - rowDist;
-				antidote2[1] = pairs[1][1] + colDist;
+				let A = [...pairs[0]];
+				let B = [...pairs[1]];
+				while (true) {
+					const a: [number, number] = [A[0] + rowDist, A[1] - colDist];
+					const b: [number, number] = [B[0] - rowDist, B[1] + colDist];
+					antidotes.push(a);
+					antidotes.push(b);
+					A = [...a];
+					B = [...b];
+
+					if (isOutOfBounds(A) && isOutOfBounds(B)) {
+						break;
+					}
+				}
 			}
 		} else {
 			if (isXBigger) {
 				// x A
 				// x x
-				antidote1[0] = pairs[0][0] - rowDist;
-				antidote1[1] = pairs[0][1] + colDist;
-				antidote2[0] = pairs[1][0] + rowDist;
-				antidote2[1] = pairs[1][1] - colDist;
+				let A = [...pairs[0]];
+				let B = [...pairs[1]];
+				while (true) {
+					const a: [number, number] = [A[0] - rowDist, A[1] + colDist];
+					const b: [number, number] = [B[0] + rowDist, B[1] - colDist];
+					antidotes.push(a);
+					antidotes.push(b);
+					A = [...a];
+					B = [...b];
+
+					if (isOutOfBounds(A) && isOutOfBounds(B)) {
+						break;
+					}
+				}
 			} else {
 				// A x
 				// x x
-				antidote1[0] = pairs[0][0] - rowDist;
-				antidote1[1] = pairs[0][1] - colDist;
-				antidote2[0] = pairs[1][0] + rowDist;
-				antidote2[1] = pairs[1][1] + colDist;
+				let A = [...pairs[0]];
+				let B = [...pairs[1]];
+				while (true) {
+					const a: [number, number] = [A[0] - rowDist, A[1] - colDist];
+					const b: [number, number] = [B[0] + rowDist, B[1] + colDist];
+					antidotes.push(a);
+					antidotes.push(b);
+					A = [...a];
+					B = [...b];
+
+					if (isOutOfBounds(A) && isOutOfBounds(B)) {
+						break;
+					}
+				}
 			}
 		}
 
-		return [antidote1, antidote2];
+		return antidotes;
 	};
 
 	const res = new Set<string>();
@@ -69,6 +114,8 @@ export default (lines: string[]) => {
 				// filter out antenna itself
 				(antenna2) => antenna[0] !== antenna2[0] && antenna[1] !== antenna2[1],
 			);
+			// add antenna itself to antidotes
+			res.add(`${antenna[0]}-${antenna[1]}`);
 			for (const a of others) {
 				const antidotes = getAntidotes([antenna, a]);
 				for (const a of antidotes) {
