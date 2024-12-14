@@ -15,8 +15,8 @@ export default (lines: string[]) => {
 		const A_Y = Number(buttonA?.[2]);
 		const B_X = Number(buttonB?.[1]);
 		const B_Y = Number(buttonB?.[2]);
-		const P_X = Number(prize?.[1]);
-		const P_Y = Number(prize?.[2]);
+		const P_X = Number(prize?.[1]) + 10_000_000_000_000;
+		const P_Y = Number(prize?.[2]) + 10_000_000_000_000;
 
 		// https://cs.wikipedia.org/wiki/Cramerovo_pravidlo
 		const ACount = (P_X * B_Y - P_Y * B_X) / (A_X * B_Y - A_Y * B_X);
